@@ -5,6 +5,28 @@ const myPeer = new Peer(undefined, {
   host: '/',
   port: '443'
 })
+
+const screenSharing = () => {
+
+
+navigator.mediaDevices.getDisplaymedia({
+  cursor: true
+}).then(stream => {
+  let videoTrack = stream.getVideoTracks()[0];
+  PCs.forEach(function(pc) {
+    let sender = pc.getSenders().find(function(s) {
+      return s.track.kind == videoTrack.kind;
+    });
+    console.log('found sender: ', sender);
+    sender.replaceTrack(videoTrack);
+  });
+
+})
+.catch(function(err) {
+  console.error('error happens: ', err)
+})
+}
+
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.muted = true;
@@ -100,6 +122,7 @@ const playStop = () => {
     myVideoStream.getVideoTracks()[0].enabled = true;
   }
 }
+
 
 const setMuteButton = () => {
   const html = `
